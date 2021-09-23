@@ -1,6 +1,6 @@
 let app = new PIXI.Application({
-  width: 600,
-  height: 600,
+  width: 480,
+  height: 480,
   backgroundColor: 0xffffff,
 });
 
@@ -17,9 +17,61 @@ const getRandomColor = () => {
 };
 
 const circles = [];
+let indexes = [];
+let point = 0;
+
 class Circle {
-  constructor(circle) {
+  constructor(circle, color) {
     this.circle = circle;
+    this.color = color;
+  }
+}
+
+const updateCircles = () => {
+  let needUpdate = circles.filter(el => el.circle === null).length > 0;
+  let i = 35;
+
+  while (needUpdate && i >= 0) {
+    if (i >= 6 && circles[i].circle === null) {
+      // ЕСЛИ ВСЕ ВЕРХНИЕ НУЛ
+      circles[i].circle = circles[i - 6].circle;
+      circles[i].color = circles[i - 6].color;
+
+      circles[i - 6].circle = null;
+      circles[i - 6].color = "";
+
+      circles[i].circle.x = 80 * (i % 6) + 40;
+      circles[i].circle.y = 80 * Math.trunc(i / 6) + 40;
+
+      app.stage.addChild(circles[i].circle);
+
+      needUpdate = circles.filter(el => el.circle === null).length > 0;
+    } else
+      if (i < 6 && circles[i].circle === null) {
+        const color = getRandomColor();
+        const circle = PIXI.Sprite.from(`../data/${color}.png`);
+
+        circle.interactive = true;
+        circle.buttonMode = true;
+
+        circle.anchor.set(0.5);
+        circle.width = 50;
+        circle.height = 50;
+        circle.x = 80 * (i % 6) + 40;
+        circle.y = 80 * Math.trunc(i / 6) + 40;
+
+        circle
+          .on("pointerdown", onDragStart)
+          .on("pointerup", onDragEnd)
+          .on("pointermove", onDragMove)
+          .on("pointerupoutside", onDragEnd);
+
+        circles[i] = new Circle(circle, color);
+        app.stage.addChild(circles[i].circle);
+
+        needUpdate = circles.filter(el => el.circle === null).length > 0;
+      }
+    i--;
   }
 }
 
@@ -30,40 +82,75 @@ function onDragStart(event) {
 }
 
 function onDragEnd() {
-  this.alpha = 1;
+  this.alpha = 0.5;
   this.dragging = false;
   this.data = null;
+
+  indexes = [...new Set(indexes)];
+
+  for (let i = 0; i < indexes.length; i++) {
+    app.stage.removeChild(circles[indexes[i]].circle);
+
+    circles[indexes[i]].circle = null;
+    circles[indexes[i]].color = "";
+  }
+
+  point += indexes.length;
+  console.log(point);
+
+  // console.log(circles);
+  indexes.length = 0;
+  updateCircles();
 }
 
 function onDragMove() {
   if (this.dragging) {
     const newPosition = this.data.getLocalPosition(this.parent);
-    this.x = newPosition.x;
-    this.y = newPosition.y;
+    const index = Math.trunc(newPosition.y / 80) * 6 + Math.trunc(newPosition.x / 80);
+
+    if (circles[index].circle) circles[index].circle.alpha = 0.3;
+
+    indexes.push(index);
+    // console.log(index);
   }
 }
 
 const setField = (i, j) => {
-  const circle = PIXI.Sprite.from(`../data/${getRandomColor()}.png`);
+  const color = getRandomColor();
+  const circle = PIXI.Sprite.from(`../data/${color}.png`);
 
   circle.interactive = true;
   circle.buttonMode = true;
 
   circle.anchor.set(0.5);
-  circle.width = 100;
-  circle.height = 100;
-  circle.x = 100 * i + 50;
-  circle.y = 100 * j + 50;
+  circle.width = 50;
+  circle.height = 50;
+  circle.x = 80 * i + 40;
+  circle.y = 80 * j + 40;
 
   circle
     .on("pointerdown", onDragStart)
     .on("pointerup", onDragEnd)
-    .on("pointerupoutside", onDragEnd)
-    .on("pointermove", onDragMove);
+    .on("pointermove", onDragMove)
+    .on("pointerupoutside", onDragEnd);
 
-  circles.push(new Circle(circle));
+  circles.push(new Circle(circle, color));
 };
 
-for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) setField(i, j);
+for (let i = 0; i < 36; i++)
+  setField(i % 6, Math.trunc(i / 6));
 
 circles.forEach((circle) => app.stage.addChild(circle.circle));
+
+const restartButton = document.getElementById("restart");
+restartButton.onclick = () => {
+  circles.forEach(el => app.stage.removeChild(el.circle));
+  circles.length = 0;
+  indexes.length = 0;
+  point = 0;
+
+  for (let i = 0; i < 36; i++)
+    setField(i % 6, Math.trunc(i / 6));
+
+  circles.forEach((circle) => app.stage.addChild(circle.circle));
+}

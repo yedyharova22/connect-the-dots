@@ -34,6 +34,13 @@ body::-webkit-scrollbar-track {
     align-items: center;
 }
 
+.info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .header {
     color: aliceblue;
     font-weight: 900;

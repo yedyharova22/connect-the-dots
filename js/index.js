@@ -5,9 +5,13 @@ let app = new PIXI.Application({
   backgroundColor: 0xffffff,
 });
 
+const canv = document.getElementById("canv");
+const wrapper = document.getElementById("wrapper");
+
 // on window load new Pixi canvas appears
 window.onload = function () {
-  document.body.appendChild(app?.view);
+  wrapper.style = "display: flex";
+  canv.appendChild(app?.view);
 };
 
 // get random color method for making multicolored texture
@@ -43,7 +47,7 @@ class Circle {
 const generateCircle = (i) => {
   const color = getRandomColor();
   // create circle as Pixi Sprite
-  const circle = PIXI.Sprite.from(`../data/${color}.png`);
+  const circle = PIXI.Sprite.from(`../data/${color}.svg`);
 
   circle.interactive = true;
   circle.buttonMode = true;

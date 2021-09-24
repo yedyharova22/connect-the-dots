@@ -6,13 +6,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" href="./data/purple.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
   <link rel="stylesheet" href="./styles/main.css" />
   <title>Connect the dots</title>
   <script src="./js/pixi.min.js"></script>
 </head>
 
 <body>
-  <div class="wrapper">
+  <div id="wrapper" class="wrapper animate__animated animate__slideInDown">
     <div class="header">
       <h1>Connect the dots</h1>
       <div class="info">
@@ -20,11 +21,13 @@
         <div id="score">Score: 0</div>
       </div>
     </div>
+    <div id="canv">
+    </div>
   </div>
-  <script src="./js/index.js"></script>
   <div class="footer">
     © Anastasiia Yedyharova - 2021
   </div>
+  <script src="./js/index.js"></script>
 </body>
 
 </html>

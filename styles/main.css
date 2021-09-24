@@ -39,6 +39,7 @@ body::-webkit-scrollbar-track {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  display: none;
 }
 
 .info {
@@ -62,4 +63,8 @@ body::-webkit-scrollbar-track {
 
 #restart {
   cursor: pointer;
+}
+
+canvas {
+  border-radius: 25px;
 }
